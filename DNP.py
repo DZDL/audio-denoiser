@@ -22,7 +22,8 @@ def optimize(model, criterion, input, target, samples_dir, LR, num_iter, sr, sav
         optimizer.step()
 
         # accumulating the abs difference
-        stft = np.abs(utils.torch_stft(out, nfft=accumulator.nfft, center=accumulator.center))
+        stft = np.abs(utils.torch_stft(
+            out, nfft=accumulator.nfft, center=accumulator.center))
         accumulator.sum_difference(stft, j)
         if (j + 1) % save_every == 0:
             # clip & normalize mask
@@ -36,14 +37,15 @@ def optimize(model, criterion, input, target, samples_dir, LR, num_iter, sr, sav
             # write net output
             out_write = out.clone().detach()
             out_write = out_write.detach().cpu().numpy()
-            utils.write_norm_music(out_write, f'{samples_dir}/net_output_{j}.wav', sr)
+            utils.write_norm_music(
+                out_write, f'{samples_dir}/net_output_{j}.wav', sr)
 
 
 def dnp(run_name, noisy_file, samples_dir, LR=0.001, num_iter=5000, save_every=50):
 
     # Initiate model
     nlayers = 6
-    model = Unet(nlayers=nlayers, nefilters=60).cuda()
+    model = Unet(nlayers=nlayers, nefilters=60)
     samples_dir = os.path.join(samples_dir, run_name)
     utils.makedirs(samples_dir)
     # load data
@@ -52,7 +54,7 @@ def dnp(run_name, noisy_file, samples_dir, LR=0.001, num_iter=5000, save_every=5
     target = target/utils.MAX_WAV_VALUE
     input = torch.rand_like(target)
     input = (input - 0.5) * 2
-    target, input = target.cuda(), input.cuda()
+    target, input = target, input
     criterion = torch.nn.MSELoss()
 
     # Initialize accumulator
@@ -62,16 +64,19 @@ def dnp(run_name, noisy_file, samples_dir, LR=0.001, num_iter=5000, save_every=5
     high_cut = 90
     center = False
     bandpass = int(round(3 / 512 * nfft))
-    accumulator = utils.Accumulator(target, low_cut, high_cut, nfft, center, residual, sr, bandpass)
+    accumulator = utils.Accumulator(
+        target, low_cut, high_cut, nfft, center, residual, sr, bandpass)
 
     # Run the algorithm
-    optimize(model, criterion, input, target, samples_dir, LR, num_iter, sr, save_every, accumulator)
+    optimize(model, criterion, input, target, samples_dir,
+             LR, num_iter, sr, save_every, accumulator)
 
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--run_name', type=str, default='demo', help='name of the run')
+    parser.add_argument('--run_name', type=str,
+                        default='demo', help='name of the run')
     parser.add_argument('--LR', default=0.001, type=float)
     parser.add_argument('--num_iter', default=5000, type=int)
     parser.add_argument('--save_every', default=250, type=int)
@@ -83,9 +88,9 @@ if __name__ == '__main__':
     torch.backends.cudnn.deterministic = True
     seed = opts.seed
     torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
+    torch.manual_seed(seed)
     np.random.seed(seed)
 
     run_name = f'{opts.run_name}_{opts.LR}_{opts.num_iter}'
-    dnp(run_name=run_name, noisy_file=opts.noisy_file, samples_dir=opts.samples_dir, LR=opts.LR, num_iter=opts.num_iter
-        , save_every=opts.save_every)
+    dnp(run_name=run_name, noisy_file=opts.noisy_file, samples_dir=opts.samples_dir,
+        LR=opts.LR, num_iter=opts.num_iter, save_every=opts.save_every)
