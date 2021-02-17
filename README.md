@@ -1,4 +1,4 @@
-# DNP
+# DNP Only-CPU (10 hours for 1 sec of inference)
 Speech Denoising by Accumulating Per-Frequency Modeling Fluctuations
 
 This repository provides a PyTorch implementation of "Speech Denoising by Accumulating Per-Frequency Modeling Fluctuations" [(paper)](https://arxiv.org/pdf/1904.07612.pdf)

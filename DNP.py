@@ -76,12 +76,12 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--run_name', type=str,
-                        default='demo', help='name of the run')
+                        default='input', help='name of the run')
     parser.add_argument('--LR', default=0.001, type=float)
     parser.add_argument('--num_iter', default=5000, type=int)
     parser.add_argument('--save_every', default=250, type=int)
     parser.add_argument('--seed', default=1234, type=int)
-    parser.add_argument('--noisy_file', type=str, default='demo.wav')
+    parser.add_argument('--noisy_file', type=str, default='input.wav')
     parser.add_argument('--samples_dir', type=str, default='samples')
 
     opts = parser.parse_args()
